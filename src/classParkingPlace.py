@@ -4,6 +4,9 @@ class ParkingPlace(object):
 
 #Mask: path to ParkingPlace mask
 
+    """Constructor of class Parking Place. It needs the parking place mask,
+       its ID, its threshold for SURF algorithm, and an optional argument
+       "occupied", which can be set if initial occupancy state is occupied."""
     def __init__(self, mask, ID, threshold, occupied=False):
         self.im_mask=cv2.imread(mask, 0)
         self.occupied=occupied
@@ -13,18 +16,28 @@ class ParkingPlace(object):
         self.kp=None
         self.des=None
 
+    """Method that sets the Mask with which the input frame will be compared"""
+
     def setMask(self, frame_path):
         frame=cv2.cvtColor(frame_path,cv2.COLOR_BGR2GRAY)
         self.actualMask= frame*self.im_mask
         self.kp,self.des=occ.computeSurfFeatures(self.actualMask)
         cv2.imwrite('Placa.jpg',self.actualMask)
        
+    """Method that sets the actual state of the parking place. It must be true
+       if the parking place is occupied and false if it is not."""
 
     def setOccupancyState(self, state):
         self.occupied = state
     
+    """Method that sets the state of the Mask (whether there is a car in the actual
+       mask or there is not)."""
+
     def setMaskState(self):
         self.maskState=self.occupied
+
+     """ Method that checks occupancy state of the parking place. It changes the
+        local attribute "occupied" calling setOccupancyState."""
 
     def checkOccupancy(self, frame):
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -50,8 +63,3 @@ class ParkingPlace(object):
           #  self.setMask(frame)
             print("Placa "+ str(self.ID) + " ocupada?" + str(self.occupied)+ " " + str(good_matches))
 
-"""La classe càmera inicialitza les places amb la seva màscara.
-Per crear la màscara amb la placa de parking segmentada existeix el metode setMask.
-Per canviar la ocupació està el mètode setOccupancy(state), on state és un booleà. 
-La classe Cam, per cada plaça, haurà de fer checkOccupancy cada cop que s'hagi detectat moviment en la zona de parking. Podem dividir les zones de Parking i aixi fem menys comparacions cada cop que es mogui, guanyant temps de computacio."""
-     
