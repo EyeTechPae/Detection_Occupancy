@@ -21,7 +21,6 @@ while rval:
 	rval, frame = cap.read()
 	if cont%1800 is 0:
 		parking.setMask(frame)
-		parking.setMaskState()
 
 tend=time.time()-t
 print("Total time elapsesd: "+str(tend))

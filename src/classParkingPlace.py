@@ -23,6 +23,7 @@ class ParkingPlace(object):
         self.actualMask= frame*self.im_mask
         self.kp,self.des=occ.computeSurfFeatures(self.actualMask)
         cv2.imwrite('Placa.jpg',self.actualMask)
+        self.setMaskState()
        
     """Method that sets the actual state of the parking place. It must be true
        if the parking place is occupied and false if it is not."""
@@ -36,8 +37,8 @@ class ParkingPlace(object):
     def setMaskState(self):
         self.maskState=self.occupied
 
-     """ Method that checks occupancy state of the parking place. It changes the
-        local attribute "occupied" calling setOccupancyState."""
+    """ Method that checks occupancy state of the parking place. It changes the
+    local attribute "occupied" calling setOccupancyState."""
 
     def checkOccupancy(self, frame):
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
