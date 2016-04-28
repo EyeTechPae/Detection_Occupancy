@@ -1,5 +1,5 @@
 import sys
-import d6_1 as camera2
+import d5_2 as camera2
 import cv2
 
 class Cam2(object):
@@ -8,27 +8,32 @@ class Cam2(object):
 	    of ParkingPlaces and parksUp other array of parking places, for the bottom zone
 	    of the parking and for the top side respectivly."""
 
-	def __init__(self, masks, parksDown, parksUp):
-		for mask,index in zip(masks, range(len(masks))):
-			self.masks[index]=cv2.imread(mask, 0)
-		for parkUp, index in zip(parksUp, range(len(parksUp))):
-			self.parksUp[index]=parkUp
-		for parkDown, index in zip(parksDown, range(len(parksUp))):
-			self.parksDown[index]=parkDown
-
+	def __init__(self, masky, parksDown, parksUp):
+		self.masks = []
+		self.parksUp = []
+		self.parksDown = []
+		for mask in masky:
+			self.masks.append(cv2.imread(mask, 0))
+		for parkUp in parksUp:
+			self.parksUp.append(parkUp)
+		for parkDown in parksDown:
+			self.parksDown.append(parkDown)
+		
+		self.fgbg = cv2.createBackgroundSubtractorMOG2(detectShadows=False)
 	""" This method defines if there is a car entering in Cam2. It needs the frame
 	    and returns true if there is a car entering and false if there is not.    """
 
 	def isZoneIn(self, frame): #override 
-		frame_applied= frame*self.masks[0]		
-		fgbg = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
-		ret = True
-		str_open, str_dila = camera2.get_strelements(28,53)
-		fgmask = fgbg.apply(frame_applied)
+		
+		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+		frame_applied= frame*self.masks[0]
+		frame_applied = cv2.resize(frame_applied, (360, 240))		
+		str_open, str_dila = camera2.get_strelements(10,12)
+		fgmask = self.fgbg.apply(frame_applied)
 		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
 		contours = camera2.get_contours (img)
-		centres, frame_applied = camera2.get_centroids (contours, frame_applied)
-		if len(centres)>0:
+		#centres, frame_applied = camera2.get_centroids (contours, frame_applied)
+		if len(contours)>0:
 			return True
 		else:
 			return False
@@ -36,16 +41,16 @@ class Cam2(object):
 	""" This method defines if there is a car going out of Cam2. It needs the frame
 	    and returns true if there is a car going out and false if there is not.    """
 
-	def isZoneOut(self):  #override 
-		frame_applied= frame*self.masks[1]		
-		fgbg = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
-		ret = True
-		str_open, str_dila = camera2.get_strelements(28,53)
-		fgmask = fgbg.apply(frame_applied)
+	def isZoneOut(self, frame):  #override 
+		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+		frame_applied= frame*self.masks[1]
+		frame_applied = cv2.resize(frame_applied, (360, 240))		
+		str_open, str_dila = camera2.get_strelements(10,12)
+		fgmask = self.fgbg.apply(frame_applied)
 		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
 		contours = camera2.get_contours (img)
-		centres, frame_applied = camera2.get_centroids (contours, frame_applied)
-		if len(centres)>0:
+		#centres, frame_applied = camera2.get_centroids (contours, frame_applied)
+		if len(contours)>0:
 			return True
 		else:
 			return False
@@ -54,16 +59,16 @@ class Cam2(object):
 	    battery parking lots. It returns true if there is a movement and false if 
             there is not."""		
 
-	def isParkingDown(self): #override 
+	def isParkingDown(self, frame): #override 
+		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		frame_applied= frame*self.masks[2]		
-		fgbg = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
-		ret = True
-		str_open, str_dila = camera2.get_strelements(28,53)
-		fgmask = fgbg.apply(frame_applied)
+		frame_applied = cv2.resize(frame_applied, (360, 240))		
+		str_open, str_dila = camera2.get_strelements(10,12)
+		fgmask = self.fgbg.apply(frame_applied)
 		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
 		contours = camera2.get_contours (img)
-		centres, frame_applied = camera2.get_centroids (contours, frame_applied)
-		if len(centres)>0:
+		#centres, frame_applied = camera2.get_centroids (contours, frame_applied)
+		if len(contours)>0:
 			return True
 		else:
 			return False
@@ -72,31 +77,58 @@ class Cam2(object):
 	    battery parking lots. It returns true if there is a movement and false if 
             there is not."""
 
-	def isParkingUp(self): #override 
+	def isParkingUp(self, frame): #override 
+		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		frame_applied= frame*self.masks[3]		
-		fgbg = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
-		ret = True
-		str_open, str_dila = camera2.get_strelements(28,53)
-		fgmask = fgbg.apply(frame_applied)
+		frame_applied = cv2.resize(frame_applied, (360, 240))		
+		str_open, str_dila = camera2.get_strelements(10,12)
+		fgmask = self.fgbg.apply(frame_applied)
 		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
 		contours = camera2.get_contours (img)
-		centres, frame_applied = camera2.get_centroids (contours, frame_applied)
-		if len(centres)>0:
+		#centres, frame_applied = camera2.get_centroids (contours, frame_applied)
+		if len(contours)>0:
 			return True
 		else:
 			return False
 
+	def updateRefMasks(self, frame):
+		for i in range(len(self.parksDown)):
+			self.parksDown[i].setMask(frame)
+		for j in range(len(self.parksUp)):
+			self.parksUp[j].setMask(frame)
+
+	def updateOccupancyStatesDown(self, frame):
+		for i in range(len(self.parksDown)):
+			self.parksDown[i].checkOccupancy(frame)
+		
+	def updateOccupancyStatesUp(self, frame):
+		for i in range(len(self.parksUp)):
+			self.parksUp[i].checkOccupancy(frame)
+
+
+			
+
 
 	"""Method that checks the state of the battery parking lots if there is any
 	   movement in the zones of interest."""
+	def checkCamState(self, frame): #override
 
-	def checkCamState(self): #override 
+		if self.isParkingDown(frame):
+			self.parkDownCounter=0
+			if self.parkDownCounter <1 :
+				for parkDown in self.parksDown:
+					parkDown.checkOccupancy(frame)
+				self.parkDownCounter= self.parkDownCounter+1
+			else:
+				self.parkDownCounter=0
+		if self.isParkingUp(frame):
+			self.parkUpCounter=0
+			if self.parkUpCounter < 4:           
+				for parkUp in self.parksUp:
+  					parkUp.checkOccupancy(frame)
+				self.parkUpCounter = self.parkUpCounter+1
+			else:
+				self.parkUpCounter=0
+	
 
-		if isParkingDown():
-			for parkDown in self.parksDown:
-				parkDown.checkOccupancyState()
-
-		if isParkingUp():
-			for parkUp in self.parksUp:
-				parkUp.checkOccupancyState()
 
