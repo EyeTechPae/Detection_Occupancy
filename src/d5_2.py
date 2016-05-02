@@ -48,30 +48,30 @@ def get_centroids (contours, frame):
 			moments = cv2.moments(contours[i])
 			centres.append((int(moments['m10']/moments['m00']), int(moments['m01']/moments['m00'])))
 		
-			if i>0:                
-				dist = calculateDistance(centres[i-1][0],centres[i-1][1],centres[i][0],centres[i][1])
-				area=cv2.contourArea(contours[i])
-				prevarea=cv2.contourArea(contours[i-1])
-				if dist < 120:                    
-					if area > prevarea:
-						rect = cv2.minAreaRect(contours[i])
-						box = cv2.boxPoints(rect)
-						box = np.int0(box)
-						print(box)
-						frame = cv2.drawContours(frame,[box],0,(0,0,255),2)
-					else :
-						rect = cv2.minAreaRect(contours[i-1])
-						box = cv2.boxPoints(rect)
-						box = np.int0(box)
-						print(box)
-						frame = cv2.drawContours(frame,[box],0,(0,0,255),2)
-			else:
+			#if i>0:                
+				#dist = calculateDistance(centres[i-1][0],centres[i-1][1],centres[i][0],centres[i][1])
+				#area=cv2.contourArea(contours[i])
+				#prevarea=cv2.contourArea(contours[i-1])
+				#if dist < 120:                    
+					#if area > prevarea:
+						#rect = cv2.minAreaRect(contours[i])
+						#box = cv2.boxPoints(rect)
+						#box = np.int0(box)
+						#print(box)
+						#frame = cv2.drawContours(frame,[box],0,(0,0,255),2)
+					#else #:
+						#rect = cv2.minAreaRect(contours[i-1])
+						#box = cv2.boxPoints(rect)
+						#box = np.int0(box)
+						#print(box)
+						#frame = cv2.drawContours(frame,[box],0,(0,0,255),2)
+			#else:
  	
-				rect = cv2.minAreaRect(contours[i])
-				box = cv2.boxPoints(rect)
-				box = np.int0(box)
-				frame = cv2.drawContours(frame,[box],0,(0,0,255),2)
-				print(box)
+				#rect = cv2.minAreaRect(contours[i])
+				#box = cv2.boxPoints(rect)
+				#box = np.int0(box)
+				#frame = cv2.drawContours(frame,[box],0,(0,0,255),2)
+				#print(box)
 	return centres, frame
 
 		
@@ -82,36 +82,36 @@ def calculateDistance(x1,y1,x2,y2):
 
 
 #Inicialització del lector i escriptor de vídeo, monitorització del temps d'execució i creació del background substractor
-t=time.time()
-cap = cv2.VideoCapture('d5-1_mostra.mp4')
-t=time.time()
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-out = cv2.VideoWriter('output_d5_1.avi',fourcc, 15.0, (1280,720))
-outgray = cv2.VideoWriter('output_bg_gray.avi',fourcc, 15.0, (1280,720),0)
+#t=time.time()
+#cap = cv2.VideoCapture('d5-1_mostra.mp4')
+#t=time.time()
+#fourcc = cv2.VideoWriter_fourcc(*'XVID')
+#out = cv2.VideoWriter('output_d5_1.avi',fourcc, 15.0, (1280,720))
+#outgray = cv2.VideoWriter('output_bg_gray.avi',fourcc, 15.0, (1280,720),0)
 
-fgbg = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
+#fgbg = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
 
-ret = True
-str_open, str_dila = get_strelements(28,53)
-ret, frame = cap.read()
-while ret:
+#ret = True
+#str_open, str_dila = get_strelements(28,53)
+#ret, frame = cap.read()
+#while ret:
     
-    fgmask = fgbg.apply(frame)
+ #   fgmask = fgbg.apply(frame)
     #print(fgmask)
-    img = operacions_morfologiques(fgmask, str_open, str_dila)
-    contours = get_contours (img)
-    centres, frame = get_centroids (contours, frame)
-    out.write(frame)
-    outgray.write(img)
-    ret, frame = cap.read()
+  #  img = operacions_morfologiques(fgmask, str_open, str_dila)
+    #contours = get_contours (img)
+   # centres, frame = get_centroids (contours, frame)
+ #   out.write(frame)
+  #  outgray.write(img)
+   # ret, frame = cap.read()
 
 
-cap.release()
-out.release()
-outgray.release()
-tend=time.time()-t
-print(tend)
-cv2.destroyAllWindows()
+#cap.release()
+#out.release()
+#outgray.release()
+#tend=time.time()-t
+#print(tend)
+#cv2.destroyAllWindows()
 
 
 

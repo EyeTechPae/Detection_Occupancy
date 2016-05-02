@@ -28,7 +28,7 @@ class Cam2(object):
 		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		frame_applied= frame*self.masks[0]
 		frame_applied = cv2.resize(frame_applied, (360, 240))		
-		str_open, str_dila = camera2.get_strelements(10,12)
+		str_open, str_dila = camera2.get_strelements(15,12)
 		fgmask = self.fgbg.apply(frame_applied)
 		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
 		contours = camera2.get_contours (img)
@@ -45,7 +45,7 @@ class Cam2(object):
 		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		frame_applied= frame*self.masks[1]
 		frame_applied = cv2.resize(frame_applied, (360, 240))		
-		str_open, str_dila = camera2.get_strelements(10,12)
+		str_open, str_dila = camera2.get_strelements(15,12)
 		fgmask = self.fgbg.apply(frame_applied)
 		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
 		contours = camera2.get_contours (img)
@@ -63,7 +63,7 @@ class Cam2(object):
 		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		frame_applied= frame*self.masks[2]		
 		frame_applied = cv2.resize(frame_applied, (360, 240))		
-		str_open, str_dila = camera2.get_strelements(10,12)
+		str_open, str_dila = camera2.get_strelements(15,12)
 		fgmask = self.fgbg.apply(frame_applied)
 		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
 		contours = camera2.get_contours (img)
@@ -81,7 +81,7 @@ class Cam2(object):
 		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		frame_applied= frame*self.masks[3]		
 		frame_applied = cv2.resize(frame_applied, (360, 240))		
-		str_open, str_dila = camera2.get_strelements(10,12)
+		str_open, str_dila = camera2.get_strelements(15,12)
 		fgmask = self.fgbg.apply(frame_applied)
 		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
 		contours = camera2.get_contours (img)
@@ -91,22 +91,37 @@ class Cam2(object):
 		else:
 			return False
 
+#actualitzem totes les imatges de referencia
+
 	def updateRefMasks(self, frame):
 		for i in range(len(self.parksDown)):
 			self.parksDown[i].setMask(frame)
 		for j in range(len(self.parksUp)):
 			self.parksUp[j].setMask(frame)
+#actualitzar parking states de dalt
 
-	def updateOccupancyStatesDown(self, frame):
-		for i in range(len(self.parksDown)):
-			self.parksDown[i].checkOccupancy(frame)
-		
 	def updateOccupancyStatesUp(self, frame):
 		for i in range(len(self.parksUp)):
 			self.parksUp[i].checkOccupancy(frame)
 
 
-			
+#actualitzar parking states de baix
+	def updateOccupancyStatesDown(self, frame):
+		for i in range(len(self.parksDown)):
+			self.parksDown[i].checkOccupancy(frame)
+
+
+	def track_centers(self, frame):
+
+		frame=cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+		frame_applied= frame*self.masks[4]		
+		frame_applied = cv2.resize(frame_applied, (360, 240))		
+		str_open, str_dila = camera2.get_strelements(15,12)
+		fgmask = self.fgbg.apply(frame_applied)
+		img = camera2.operacions_morfologiques(fgmask, str_open, str_dila)
+		contours = camera2.get_contours (img)	
+		centres, frame_applied = camera2.get_centroids (contours, frame_applied)
+		return centres
 
 
 	"""Method that checks the state of the battery parking lots if there is any

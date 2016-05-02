@@ -4,9 +4,9 @@ import os, sys
 
 """This method computes Surf Features for detection of occupancy algorithm."""
 
-def computeSurfFeatures(masked_img, alpha):
+def computeSurfFeatures(masked_img):
 	#Create SURF, the alpha coeficient must be specified
-	surf = cv2.xfeatures2d.SURF_create(alpha)
+	surf = cv2.xfeatures2d.SURF_create(500)
 	#Detect and Compute the keypoints
 	kp, des = surf.detectAndCompute(masked_img,None)
 	return kp,des
@@ -35,10 +35,10 @@ def matcher_select(matches):
 
 """Method that computes Good matches between actual frame and actual Mask."""
 
-def computeGoodMatches(frame, alpha, kp1, des1):
+def computeGoodMatches(frame, kp1, des1):
 	
 	#Extract SURF Features from current masked frame
-	kp2, des2 = computeSurfFeatures(frame, alpha)
+	kp2, des2 = computeSurfFeatures(frame)
 	#FlanBasedMatcher to select some matches with a certain distance
 	matches = matcher(des1,des2)
 	#Select good matches
