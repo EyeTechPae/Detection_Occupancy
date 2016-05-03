@@ -180,27 +180,3 @@ class Cam2(object):
 		self.timer_up=self.timer_up+1
 
 
-
-	"""Method that checks the state of the battery parking lots if there is any
-	   movement in the zones of interest."""
-	def checkCamState(self, frame): #override
-
-		if self.isParkingDown(frame):
-			self.parkDownCounter=0
-			if self.parkDownCounter <1 :
-				for parkDown in self.parksDown:
-					parkDown.checkOccupancy(frame)
-				self.parkDownCounter= self.parkDownCounter+1
-			else:
-				self.parkDownCounter=0
-		if self.isParkingUp(frame):
-			self.parkUpCounter=0
-			if self.parkUpCounter < 4:           
-				for parkUp in self.parksUp:
-  					parkUp.checkOccupancy(frame)
-				self.parkUpCounter = self.parkUpCounter+1
-			else:
-				self.parkUpCounter=0
-	
-
-
