@@ -2,9 +2,9 @@ import sys
 import d5_2 as camera2
 import cv2
 
-class Cam2(object):
+class Cam5(object):
 
-	""" Class Cam2 constructor. Masks are array of masks,  parksDown is an array
+	""" Class Cam5 constructor. Masks are array of masks,  parksDown is an array
 	    of ParkingPlaces and parksUp other array of parking places, for the bottom zone
 	    of the parking and for the top side respectivly."""
 
@@ -12,6 +12,15 @@ class Cam2(object):
 		self.masks = []
 		self.parksUp = []
 		self.parksDown = []
+		self.timer_references=0
+
+		self.timer_up=0
+		self.timer_down=0
+		self.prev_down = False
+		self.prev_up = False
+		self.prev_inMotion = False
+		self.prev_outMotion = False
+		self.centres=[]
 		for mask in masky:
 			self.masks.append(cv2.imread(mask, 0))
 		for parkUp in parksUp:
@@ -124,6 +133,54 @@ class Cam2(object):
 		return centres
 
 
+
+
+	"""Advanced state checker with timers and tracking callings."""
+	def checkState(self, frame):
+		if self.prev_up is not self.isParkingUp(frame):
+			if self.prev_up==True:				
+				self.prev_up=False
+				if self.timer_down>600:
+					self.updateOccupancyStatesUp(frame)
+					self.timer_up=0
+			else:
+				self.prev_up=True
+				#cam.updateOccupancyStatesUp(frame)
+						
+		if self.prev_down is not self.isParkingDown(frame):
+			if self.prev_down==True:				
+				self.prev_down=False
+				if self.timer_down>650:
+					self.updateOccupancyStatesDown(frame)
+					self.timer_down=0
+			else:
+				self.prev_down=True	
+				#cam.updateOccupancyStatesDown(frame)
+	#actualitzar màscares quan entra un cotxe zona IN i no hi  ha moviment a parkingUp ni parkingDown					
+		if self.prev_inMotion is not self.isZoneIn(frame):
+			if self.prev_inMotion==True:				
+				self.prev_inMotion=False
+			else:
+				self.prev_inMotion=False
+				
+
+			if self.prev_up==False and self.prev_down==False and self.timer_references>9000:
+				self.updateRefMasks(frame)
+				self.timer_references=0
+
+		if self.timer_up%900==0 and self.prev_up==False:
+			self.updateOccupancyStatesUp(frame)
+		
+		if self.timer_down%900==0 and self.prev_down==False:
+			self.updateOccupancyStatesDown(frame)
+		
+		self.centres= self.track_centers(frame)
+		self.timer_references=self.timer_references+1
+		self.timer_down=self.timer_down+1
+		self.timer_up=self.timer_up+1
+
+
+
 	"""Method that checks the state of the battery parking lots if there is any
 	   movement in the zones of interest."""
 	def checkCamState(self, frame): #override
@@ -145,5 +202,3 @@ class Cam2(object):
 			else:
 				self.parkUpCounter=0
 	
-
-
