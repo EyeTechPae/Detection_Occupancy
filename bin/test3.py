@@ -34,10 +34,11 @@ class myThread (threading.Thread):
 
 
 
-cap1=cv2.VideoCapture('test.mp4')
-cap2=cv2.VideoCapture('test.mp4')
-cap3=cv2.VideoCapture('test.mp4')
-cap4=cv2.VideoCapture('test.mp4')
+
+cap1=cv2.VideoCapture('../src/samples/Videos/test.mp4')
+cap2=cv2.VideoCapture('../src/samples/Videos/test.mp4')
+cap3=cv2.VideoCapture('../src/samples/Videos/test.mp4')
+cap4=cv2.VideoCapture('../src/samples/Videos/test.mp4')
 
 rval, frame1 = cap1.read()
 rval, frame2 = cap2.read()
