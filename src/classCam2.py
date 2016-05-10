@@ -4,6 +4,7 @@ import cv2
 
 class Cam2(object):
 
+
 	""" Class Cam2 constructor. Masks are array of masks,  parksDown is an array
 	    of ParkingPlaces and parksUp other array of parking places, for the bottom zone
 	    of the parking and for the top side respectivly."""
@@ -31,6 +32,33 @@ class Cam2(object):
 		self.fgbg = cv2.createBackgroundSubtractorMOG2(detectShadows=False)
 	""" This method defines if there is a car entering in Cam2. It needs the frame
 	    and returns true if there is a car entering and false if there is not.    """
+
+	def get_Parking_States(self): #override 
+		states_down=[]
+		states_up=[]
+		num_up=[]
+		num_down=[]
+		for i in range(len(self.parksDown)):
+			states_down.append(self.parksDown[i].occupied)
+			if states_down[i]==True:
+				num_down.append(1)
+			else:
+				num_down.append(0)
+		
+		for i in range(len(self.parksUp)):
+			states_up.append(self.parksUp[i].occupied)
+			if states_up[i]==True:
+				num_up.append(1)
+			else:
+				num_up.append(0)
+		print(str(states_down))
+		print(str(states_up))
+		return(num_down, num_up)
+
+
+
+
+
 
 	def isZoneIn(self, frame): #override 
 		
@@ -178,5 +206,6 @@ class Cam2(object):
 		self.timer_references=self.timer_references+1
 		self.timer_down=self.timer_down+1
 		self.timer_up=self.timer_up+1
-
+		state_up, state_down = self.get_Parking_States();
+		return(state_up, state_down)
 
